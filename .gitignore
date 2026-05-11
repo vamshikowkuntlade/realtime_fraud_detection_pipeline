@@ -4,17 +4,24 @@ __pycache__/
 *.pyo
 *.pyd
 
-# Virtual Environment
+# Virtual environments
 venv/
+.venv/
+env/
 
 # Terraform
 *.tfstate
 *.tfstate.*
 .terraform/
+.terraform.lock.hcl
 crash.log
+*.tfvars
+*.tfplan
 
-# Environment Variables
+# Environment variables and secrets
 .env
+*.pem
+*.key
 
 # OS
 .DS_Store
@@ -34,7 +41,12 @@ Thumbs.db
 htmlcov/
 .coverage
 
-# Build Artifacts
+# Build artifacts
 dist/
 build/
 *.zip
+
+# Tool caches
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
