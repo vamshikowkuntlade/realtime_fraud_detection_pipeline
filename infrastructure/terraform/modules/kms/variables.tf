@@ -66,7 +66,8 @@ variable "kms_key_description" {
 This improves:
 - operational clarity
 - AWS Console readability
-- governance audits
+- governance audits 
+
 */
 variable "deletion_window_in_days" {
 
