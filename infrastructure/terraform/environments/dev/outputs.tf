@@ -51,3 +51,19 @@ output "fraud_processor_role_arn" {
 
   value = module.iam.fraud_processor_role_arn
 }
+
+
+
+output "raw_archive_bucket_name" {
+
+  description = "Name of the raw archive S3 bucket"
+
+  value = module.s3.bucket_name
+}
+
+output "raw_archive_bucket_arn" {
+
+  description = "ARN of the raw archive S3 bucket"
+
+  value = module.s3.bucket_arn
+}
