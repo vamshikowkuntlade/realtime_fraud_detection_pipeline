@@ -131,13 +131,24 @@ module "iam" {
 
 
 
-module "s3"{
-  source = "../../modules/s3"
-  project_name  = var.project_name
-  environment   = var.environment
-  account_id    = var.account_id
-  kms_key_arn   = module.kms.kms_key_arn
-  tags          = local.common_tags
+module "s3" {
+  source       = "../../modules/s3"
+  project_name = var.project_name
+  environment  = var.environment
+  account_id   = var.account_id
+  kms_key_arn  = module.kms.kms_key_arn
+  tags         = local.common_tags
 
+}
+
+
+module "kinesis" {
+  source                 = "../../modules/kinesis"
+  project_name           = var.project_name
+  environment            = var.environment
+  shard_count            = 1
+  retention_period_hours = 24
+  kms_key_arn            = module.kms.kms_key_arn
+  tags                   = local.common_tags
 }
 

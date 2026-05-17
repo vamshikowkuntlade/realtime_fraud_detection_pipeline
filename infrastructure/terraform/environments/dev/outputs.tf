@@ -67,3 +67,20 @@ output "raw_archive_bucket_arn" {
 
   value = module.s3.bucket_arn
 }
+
+
+
+
+output "kinesis_stream_name" {
+
+  description = "Name of the Kinesis transaction ingestion stream"
+
+  value = module.kinesis.stream_name
+}
+
+output "kinesis_stream_arn" {
+
+  description = "ARN of the Kinesis transaction ingestion stream"
+
+  value = module.kinesis.stream_arn
+}
