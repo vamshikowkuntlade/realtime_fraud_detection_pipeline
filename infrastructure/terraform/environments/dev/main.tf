@@ -152,3 +152,17 @@ module "kinesis" {
   tags                   = local.common_tags
 }
 
+
+
+module "dynamodb" {
+
+  source = "../../modules/dynamodb"
+
+  project_name = var.project_name
+
+  environment = var.environment
+
+  kms_key_arn = module.kms.kms_key_arn
+
+  tags = local.common_tags
+}

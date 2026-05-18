@@ -84,3 +84,18 @@ output "kinesis_stream_arn" {
 
   value = module.kinesis.stream_arn
 }
+
+
+output "fraud_alerts_table_name" {
+
+  description = "Name of the DynamoDB fraud alerts table"
+
+  value = module.dynamodb.table_name
+}
+
+output "fraud_alerts_table_arn" {
+
+  description = "ARN of the DynamoDB fraud alerts table"
+
+  value = module.dynamodb.table_arn
+}
