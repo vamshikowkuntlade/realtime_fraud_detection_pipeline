@@ -123,8 +123,7 @@ This follows least-privilege principles.
 ===============================================================================
 */
 
-/* removing temporarily
-data "aws_iam_policy_document" "kinesis_access_policy" {
+data "aws_iam_policy_document" "kinesis_consumer_policy" {
 
   statement {
 
@@ -142,7 +141,11 @@ data "aws_iam_policy_document" "kinesis_access_policy" {
 
       "kinesis:DescribeStreamSummary",
 
-      "kinesis:ListShards"
+      "kinesis:ListShards",
+      
+      "kinesis:SubscribeToShard"
+
+
     ]
 
     resources = [
@@ -152,7 +155,7 @@ data "aws_iam_policy_document" "kinesis_access_policy" {
 }
 
 
-*/
+
 
 
 /*
@@ -178,8 +181,7 @@ fraud alerts table.
 ===============================================================================
 */
 
-/*removing temporarily
-data "aws_iam_policy_document" "dynamodb_access_policy" {
+data "aws_iam_policy_document" "dynamodb_write_policy" {
 
   statement {
 
@@ -198,7 +200,7 @@ data "aws_iam_policy_document" "dynamodb_access_policy" {
   }
 }
 
-*/
+
 
 
 
@@ -223,8 +225,7 @@ The role does NOT require:
 
 ===============================================================================
 */
-/*removing temporarily
-data "aws_iam_policy_document" "s3_access_policy" {
+data "aws_iam_policy_document" "s3_archive_policy" {
 
   statement {
 
@@ -243,7 +244,7 @@ data "aws_iam_policy_document" "s3_access_policy" {
   }
 }
 
-*/
+
 
 
 
@@ -380,19 +381,18 @@ transaction ingestion Kinesis stream.
 ===============================================================================
 */
 
-/*removing temporarily
-resource "aws_iam_policy" "kinesis_access_policy" {
+resource "aws_iam_policy" "kinesis_consumer_policy" {
 
   name = "${var.project_name}-${var.environment}-kinesis-access-policy"
 
   description = "Least-privilege Kinesis access policy for fraud processor Lambda"
 
-  policy = data.aws_iam_policy_document.kinesis_access_policy.json
+  policy = data.aws_iam_policy_document.kinesis_consumer_policy.json
 
   tags = var.tags
 }
 
-*/
+
 
 /*
 ===============================================================================
@@ -406,19 +406,17 @@ Permissions are intentionally restricted to PutItem only.
 
 ===============================================================================
 */
-/*remove temporarily
-resource "aws_iam_policy" "dynamodb_access_policy" {
+resource "aws_iam_policy" "dynamodb_write_policy" {
 
   name = "${var.project_name}-${var.environment}-dynamodb-access-policy"
 
   description = "Least-privilege DynamoDB write policy for fraud processor Lambda"
 
-  policy = data.aws_iam_policy_document.dynamodb_access_policy.json
+  policy = data.aws_iam_policy_document.dynamodb_write_policy.json
 
   tags = var.tags
 }
 
-*/
 
 
 /*
@@ -433,19 +431,17 @@ Access is restricted to object uploads only.
 
 ===============================================================================
 */
-/*remove temporarily
-resource "aws_iam_policy" "s3_access_policy" {
+resource "aws_iam_policy" "s3_archive_policy" {
 
   name = "${var.project_name}-${var.environment}-s3-access-policy"
 
   description = "Least-privilege S3 archive write policy for fraud processor Lambda"
 
-  policy = data.aws_iam_policy_document.s3_access_policy.json
+  policy = data.aws_iam_policy_document.s3_archive_policy.json
 
   tags = var.tags
 }
 
-*/
 
 /*
 ===============================================================================
@@ -526,15 +522,13 @@ IAM permissions only become effective after attachment.
 ===============================================================================
 */
 
-/*remove temporarily
-resource "aws_iam_role_policy_attachment" "kinesis_policy_attachment" {
+resource "aws_iam_role_policy_attachment" "kinesis_consumer_attachment" {
 
   role = aws_iam_role.fraud_processor_role.name
 
-  policy_arn = aws_iam_policy.kinesis_access_policy.arn
+  policy_arn = aws_iam_policy.kinesis_consumer_policy.arn
 }
 
-*/
 
 /*
 ===============================================================================
@@ -542,16 +536,14 @@ Attach DynamoDB Access Policy To Lambda Role
 ===============================================================================
 */
 
-/*remove temporarily
 
-resource "aws_iam_role_policy_attachment" "dynamodb_policy_attachment" {
+resource "aws_iam_role_policy_attachment" "dynamodb_write_attachment" {
 
   role = aws_iam_role.fraud_processor_role.name
 
-  policy_arn = aws_iam_policy.dynamodb_access_policy.arn
+  policy_arn = aws_iam_policy.dynamodb_write_policy.arn
 }
 
-*/
 
 /*
 ===============================================================================
@@ -559,15 +551,13 @@ Attach S3 Access Policy To Lambda Role
 ===============================================================================
 */
 
-/*remove temporarily
-resource "aws_iam_role_policy_attachment" "s3_policy_attachment" {
+resource "aws_iam_role_policy_attachment" "s3_archive_attachment" {
 
   role = aws_iam_role.fraud_processor_role.name
 
-  policy_arn = aws_iam_policy.s3_access_policy.arn
+  policy_arn = aws_iam_policy.s3_archive_policy.arn
 }
 
-*/
 
 
 /*

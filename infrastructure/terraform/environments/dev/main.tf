@@ -83,47 +83,22 @@ after those infrastructure resources are provisioned.
 
 ===============================================================================
 */
-
 module "iam" {
 
-  /*
-  Relative path to reusable IAM module.
-  */
   source = "../../modules/iam"
 
-  /*
-  Project naming identifier.
-
-  Used for:
-  - IAM role naming
-  - policy naming
-  - governance consistency
-  */
   project_name = var.project_name
 
-  /*
-  Deployment environment identifier.
-
-  Supports:
-  - environment isolation
-  - operational clarity
-  - multi-environment deployments
-  */
   environment = var.environment
 
-  /*
-  KMS ARN exposed from the KMS module.
-
-  This demonstrates Terraform module composition.
-
-  The IAM module consumes the KMS module output
-  instead of hardcoding infrastructure values.
-  */
   kms_key_arn = module.kms.kms_key_arn
 
-  /*
-  Centralized governance tags.
-  */
+  kinesis_stream_arn = module.kinesis.stream_arn
+
+  dynamodb_table_arn = module.dynamodb.table_arn
+
+  s3_bucket_arn = module.s3.bucket_arn
+
   tags = local.common_tags
 }
 
@@ -166,3 +141,27 @@ module "dynamodb" {
 
   tags = local.common_tags
 }
+
+
+
+
+
+module "lambda" {
+
+  source = "../../modules/lambda"
+
+  project_name = var.project_name
+
+  environment = var.environment
+
+  lambda_role_arn = module.iam.fraud_processor_role_arn
+
+  kinesis_stream_arn = module.kinesis.stream_arn
+
+  s3_bucket_name = module.s3.bucket_name
+
+  dynamodb_table_name = module.dynamodb.table_name
+
+  tags = local.common_tags
+}
+

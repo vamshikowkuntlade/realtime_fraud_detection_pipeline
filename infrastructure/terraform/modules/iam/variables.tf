@@ -39,26 +39,26 @@ variable "environment" {
   type = string
 }
 
-/* variable "kinesis_stream_arn" {
+variable "kinesis_stream_arn" {
 
   description = "ARN of the Kinesis transaction ingestion stream"
 
   type = string
-} */
+}
 
-/* variable "dynamodb_table_arn" {
+variable "dynamodb_table_arn" {
 
   description = "ARN of the DynamoDB fraud alerts table"
 
   type = string
-} */
+}
 
-/* variable "s3_bucket_arn" {
+variable "s3_bucket_arn" {
 
   description = "ARN of the S3 raw archive bucket"
 
   type = string
-} */
+}
 
 variable "kms_key_arn" {
 
