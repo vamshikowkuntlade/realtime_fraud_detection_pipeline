@@ -102,6 +102,38 @@ def archive_to_s3(transaction: dict):
     )
 
 
+def archive_invalid_record(
+        raw_payload: str,
+        validation_errors: list
+):
+    timestamp = datetime.utcnow()
+    
+    key = (
+
+        f"quarantine/"
+        f"year={timestamp.year}/"
+        f"month={timestamp.month:02d}/"
+        f"day={timestamp.day:02d}/"
+        f"{timestamp.timestamp()}.json"
+    )
+
+    quarantine_payload = {
+        "raw_payload": raw_payload,
+        "validation_errors": validation_errors,
+        "quarantine_at": timestamp.isoformat()
+    }
+
+    s3_client.put_object(
+        Bucket=S3_ARCHIVE_BUCKET,
+
+        Key=key,
+    
+        Body=json.dumps(quarantine_payload),
+
+        ContentType="application/json",
+
+        ServerSideEncryption="aws:kms",
+    )
 
 
 def write_fraud_alert(transaction: dict):
@@ -143,22 +175,33 @@ def process_record(record):
     transaction = json.loads(payload)
 
     # Validate payload structure.
-    valid, error = validate_transaction(transaction)
+    is_valid, validation_errors = validate_transaction(transaction)
 
-    if not valid:
 
-        logger.error(
+    if not is_valid:
 
-            json.dumps(
-                {
-                    "event": "validation_failed",
-                    "error": error,
-                    "transaction": transaction,
-                }
+            logger.warning(
+
+                json.dumps(
+                    {
+                        "event": "validation_failed",
+                        "transaction_id": transaction.get(
+                            "transaction_id",
+                            "UNKNOWN"
+                        ),
+                        "validation_errors": validation_errors,
+                    }
+                )
             )
-        )
 
-        return
+            archive_invalid_record(
+                raw_payload=payload.decode("utf-8"),
+                validation_errors=validation_errors,
+            )
+
+            return
+
+        
 
     # Execute fraud-scoring logic.
     fraud_result = evaluate_fraud(transaction)
@@ -185,6 +228,8 @@ def process_record(record):
                 "event": "transaction_processed",
                 "transaction_id": enriched_transaction["transaction_id"],
                 "fraud_flag": enriched_transaction["fraud_flag"],
+                "fraud_reasons":transaction['fraud_reasons'],
+                "location": transaction['location'],
             }
         )
     )

@@ -17,46 +17,86 @@ Validation protects downstream systems from bad data.
 """
 
 
-# Required fields expected inside every transaction event.
-REQUIRED_FIELDS = [
 
-    "transaction_id",
-    "card_number",
-    "merchant_id",
-    "transaction_amount",
-    "transaction_timestamp",
-    "location",
-]
+from datetime import datetime
+
+
+REQUIRED_FIELDS = {
+    "transaction_id": str,
+    "card_number": str,
+    "merchant_id": str,
+    "transaction_amount": (int, float),
+    "transaction_timestamp": str,
+    "location": str,
+}
 
 
 def validate_transaction(transaction: dict):
 
-    """
-    Validates transaction payload structure and business sanity.
+    validation_errors = []
 
-    Returns:
-        (True, None) if valid
-        (False, error_message) if invalid
-    """
+    # ---------------------------------------------------------
+    # Validate required fields exist
+    # ---------------------------------------------------------
 
-    missing_fields = []
-
-    # Verify every required field exists.
-    for field in REQUIRED_FIELDS:
+    for field, expected_type in REQUIRED_FIELDS.items():
 
         if field not in transaction:
 
-            missing_fields.append(field)
+            validation_errors.append(
+                f"Missing required field: {field}"
+            )
 
-    # Reject payload if required fields missing.
-    if missing_fields:
+            continue
 
-        return False, f"Missing fields: {missing_fields}"
+        # -----------------------------------------------------
+        # Validate field types
+        # -----------------------------------------------------
 
-    # Reject negative or zero transaction amounts.
-    # Fraud systems should never process invalid monetary values.
-    if transaction["transaction_amount"] <= 0:
+        if not isinstance(transaction[field], expected_type):
 
-        return False, "Invalid transaction amount"
+            validation_errors.append(
+                f"Invalid type for {field}"
+            )
+
+    # ---------------------------------------------------------
+    # Validate transaction amount
+    # ---------------------------------------------------------
+
+    amount = transaction.get("transaction_amount")
+
+    if isinstance(amount, (int, float)):
+
+        if amount <= 0:
+
+            validation_errors.append(
+                "Transaction amount must be greater than zero"
+            )
+
+    # ---------------------------------------------------------
+    # Validate timestamp format
+    # ---------------------------------------------------------
+
+    timestamp = transaction.get("transaction_timestamp")
+
+    if timestamp:
+
+        try:
+
+            datetime.fromisoformat(timestamp)
+
+        except ValueError:
+
+            validation_errors.append(
+                "Invalid ISO-8601 timestamp format"
+            )
+
+    # ---------------------------------------------------------
+    # Final validation result
+    # ---------------------------------------------------------
+
+    if validation_errors:
+
+        return False, validation_errors
 
     return True, None

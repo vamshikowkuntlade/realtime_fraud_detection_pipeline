@@ -77,6 +77,7 @@ def generate_transaction_event() -> TransactionEvent:
         merchant_id=f"MER-{random.randint(10000, 99999)}",
         merchant_category=random.choice(MERCHANT_CATEGORIES),
         transaction_amount=generate_transaction_amount(),
+        #transaction_amount="INVALID",   for testing by pushing bad events
         currency="CAD",
         transaction_timestamp=generate_timestamp(),
         location=random.choice(LOCATIONS),
