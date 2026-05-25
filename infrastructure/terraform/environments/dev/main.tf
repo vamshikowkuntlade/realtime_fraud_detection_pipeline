@@ -165,3 +165,18 @@ module "lambda" {
   tags = local.common_tags
 }
 
+
+
+
+module "monitoring" {
+
+  source = "../../modules/monitoring"
+
+  project_name = var.project_name
+
+  environment = var.environment
+
+  alert_email = var.alert_email
+
+  tags = local.common_tags
+}

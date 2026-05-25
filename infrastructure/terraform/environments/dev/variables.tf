@@ -32,3 +32,10 @@ variable "account_id" {
 
   type = string
 }
+
+variable "alert_email" {
+
+  description = "Email address receiving operational alerts"
+
+  type = string
+}
