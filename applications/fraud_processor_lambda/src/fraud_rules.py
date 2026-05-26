@@ -17,7 +17,7 @@ Keeping fraud logic isolated improves:
 
 # High-value transaction threshold.
 # Transactions above this amount are considered suspicious.
-HIGH_AMOUNT_THRESHOLD = 3000
+HIGH_AMOUNT_THRESHOLD = 1000
 
 
 # Geographies intentionally marked as high-risk for demo purposes.
